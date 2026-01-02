@@ -2,32 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Card;
+use App\Models\Hero;
+use App\Models\Order;
+use App\Models\Review;
+use App\Models\Setting;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        // Products (slider + gallery + order select)
-        $products = [
-            [
-                "name" => "Premium Sirajganj Lungi",
-                "price" => 550,
-                "img" => "https://i.ibb.co/rmvqN7N/lungi-3.jpg",
-            ],
-            [
-                "name" => "Soft Comfort Cotton",
-                "price" => 480,
-                "img" => "https://i.ibb.co/5G7ZxjY/lungi-2.jpg",
-            ],
-            [
-                "name" => "Traditional Premium Lungi",
-                "price" => 520,
-                "img" => "https://i.ibb.co/3W8tJ0C/lungi-1.jpg",
-            ]
-        ];
-
-        return view('home.index', compact('products'));
+        $hero = Hero::latest()->first(); // get the latest hero record
+        $cards = Card::latest()->first();
+        $reviews = Review::latest()->get();
+        $settings = Setting::latest()->first();
+        return view('home.index', compact('hero', 'cards', 'reviews', 'settings'));
     }
 
 
