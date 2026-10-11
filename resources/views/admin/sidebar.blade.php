@@ -36,7 +36,7 @@
             </a>
         </li>
 
-        {{-- HEROES --}}
+        {{-- HEROES
         <li>
             <a href="javascript:;">
                 <i class="sidebar-item-icon ft-users"></i>
@@ -59,7 +59,7 @@
                 <li><a href="{{ route('cards.edit') }}">Edit Card</a></li>
 
             </ul>
-        </li>
+        </li>--}}
 
 
         {{-- REVIEWS --}}
@@ -86,8 +86,8 @@
                 <li><a href="{{ route('settings.edit') }}">General Settings</a></li>
             </ul>
         </li>
-        
-        
+
+
         <li>
             <a href="javascript:;">
                 <i class="sidebar-item-icon ft-settings"></i>
