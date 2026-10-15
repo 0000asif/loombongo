@@ -53,6 +53,8 @@ Route::middleware('auth')->group(function () {
     Route::get('orders', [OrderController::class, 'index'])->name('admin.orders');
     Route::get('orders/{id}', [OrderController::class, 'show'])->name('admin.order.show');
     Route::post('orders/{id}/status', [OrderController::class, 'updateStatus'])->name('admin.order.updateStatus');
+    Route::delete('/admin/orders/{id}', [OrderController::class, 'destroy'])
+        ->name('admin.orders.destroy');
 
     Route::get('newform', [BasicController::class, 'newform']);
     Route::get('datatables', [BasicController::class, 'datatables']);
@@ -82,10 +84,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/settings/update', [SettingController::class, 'update'])->name('settings.update');
     Route::resource('reviews', ReviewController::class);
 
- Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update.password');
-    
+
     Route::get('/admin/policies/{type}/edit', [PolicyController::class, 'edit'])->name('admin.policies.edit');
     Route::put('/admin/policies/{type}', [PolicyController::class, 'update'])->name('admin.policies.update');
 

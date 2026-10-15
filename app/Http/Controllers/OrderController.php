@@ -7,11 +7,13 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\DB;
+
 class OrderController extends Controller
 {
 
-    
-//    public function store(Request $request)
+
+    //    public function store(Request $request)
 // {
 //     $request->validate([
 //         'customer_name' => 'required|string|max:255',
@@ -22,21 +24,21 @@ class OrderController extends Controller
 //         'transaction_id' => 'required_if:payment_method,bkash,nagad,rocket',
 //     ]);
 
-//     $cart = session('cart', []);
+    //     $cart = session('cart', []);
 
-//     if(empty($cart)){
+    //     if(empty($cart)){
 //         return response()->json([
 //             'success' => false,
 //             'message' => 'Your cart is empty'
 //         ]);
 //     }
 
-//     $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
+    //     $subtotal = collect($cart)->sum(fn($item) => $item['price'] * $item['quantity']);
 //     $discount = $subtotal > 2000 ? $subtotal * 0.1 : 0;
 //     $delivery = 110;
 //     $total = $subtotal - $discount + $delivery;
 
-//     $order = Order::create([
+    //     $order = Order::create([
 //         'customer_name' => $request->customer_name,
 //         'customer_phone' => $request->customer_phone,
 //         'customer_email' => $request->customer_email,
@@ -52,7 +54,7 @@ class OrderController extends Controller
 //         'order_date' => now(),
 //     ]);
 
-//     foreach($cart as $item){
+    //     foreach($cart as $item){
 //         OrderItem::create([
 //             'order_id' => $order->id,
 //             'product_id' => $item['id'],
@@ -61,13 +63,13 @@ class OrderController extends Controller
 //         ]);
 //     }
 
-//     session()->forget('cart');
+    //     session()->forget('cart');
 
-//   return back()->with('success', 'আপনার অর্ডার গ্রহণ করা হয়েছে! আমাদের প্রতিনিধি শিগগিরই যোগাযোগ করবে।');
- 
-// }
+    //   return back()->with('success', 'আপনার অর্ডার গ্রহণ করা হয়েছে! আমাদের প্রতিনিধি শিগগিরই যোগাযোগ করবে।');
 
-      public function store(Request $request)
+    // }
+
+    public function store(Request $request)
     {
         // 1️⃣ Validate the form input
         $request->validate([
@@ -122,33 +124,51 @@ class OrderController extends Controller
             ]);
         }
 
-    // 4️⃣ Clear the cart
-    session()->forget('cart');
+        // 4️⃣ Clear the cart
+        session()->forget('cart');
 
         // 4️⃣ Redirect back with success message
         return redirect()->back()->with('success', 'আপনার অর্ডার গ্রহণ করা হয়েছে! আমাদের প্রতিনিধি শিগগিরই যোগাযোগ করবে।');
     }
 
 
-    public function index() {
-    $orders = Order::latest()->get();
-    return view('admin.orders.index', compact('orders'));
-}
+    public function index()
+    {
+        $orders = Order::latest()->get();
+        return view('admin.orders.index', compact('orders'));
+    }
 
-public function show($id) {
-    $order = Order::with('items')->findOrFail($id);
-    return view('admin.orders.show', compact('order'));
-}
+    public function show($id)
+    {
+        $order = Order::with('items')->findOrFail($id);
+        return view('admin.orders.show', compact('order'));
+    }
 
-public function updateStatus(Request $request, $id) {
-    $request->validate([
-        'status' => 'required|in:pending,processing,completed,cancelled'
-    ]);
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,processing,completed,cancelled'
+        ]);
 
-    $order = Order::findOrFail($id);
-    $order->status = $request->status;
-    $order->save();
+        $order = Order::findOrFail($id);
+        $order->status = $request->status;
+        $order->save();
 
-    return redirect()->back()->with('success', 'Order status updated successfully.');
-}
+        return redirect()->back()->with('success', 'Order status updated successfully.');
+    }
+
+
+    public function destroy($id)
+    {
+        DB::transaction(function () use ($id) {
+            $order = Order::findOrFail($id);
+
+            $order->items()->delete();
+            $order->delete();
+        });
+
+        return redirect()
+            ->route('admin.orders')
+            ->with('success', 'Order deleted successfully.');
+    }
 }
